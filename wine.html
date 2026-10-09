@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WineLab | Wine Property Predictor</title>
+
+    <!-- External CSS file -->
+    <link rel="stylesheet" href="/wines.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="brand">
+            <span class="logo">W</span>
+            <span>Wine<span class="highlight">Lab</span></span>
+        </a>
+
+        <span class="nav-label">MACHINE LEARNING</span>
+    </nav>
+
+    <main class="container">
+
+        <section class="hero">
+            <div class="badge">
+                <span class="dot"></span>
+                AI-POWERED WINE ANALYSIS
+            </div>
+
+            <h1>
+                Explore your wine's<br>
+                <span>unique properties.</span>
+            </h1>
+
+            <p>
+                Enter your wine measurements and let our trained
+                machine learning model generate a prediction.
+            </p>
+        </section>
+
+        <section class="card">
+
+            <div class="card-heading">
+                <div>
+                    <h2>Wine Parameters</h2>
+                    <p>Enter the values for each feature below.</p>
+                </div>
+
+                <span class="tag">INPUT DATA</span>
+            </div>
+
+            <form method="POST" action="/" id="wineForm">
+
+                <div class="input-grid">
+                    {% for col in cols %}
+                    <div class="input-group">
+
+                        <label for="field{{ loop.index }}">
+                            {{ col }}
+                        </label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            id="field{{ loop.index }}"
+                            name="{{ col }}"
+                            placeholder="Enter {{ col }}"
+                            value="{{ values.get(col, '') }}"
+                            required>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit"
+                        class="predict-btn"
+                        id="predictBtn">
+
+                    <span id="buttonText">
+                        Predict Wine Properties
+                    </span>
+
+                    <span class="arrow" id="buttonArrow">→</span>
+                </button>
+
+            </form>
+
+            {% if prediction is not none %}
+            <div class="result" id="predictionResult">
+
+                <div class="result-icon">✓</div>
+
+                <div class="result-text">
+                    <span class="result-label">
+                        PREDICTION SUCCESSFUL
+                    </span>
+
+                    <h3>Your Prediction Result</h3>
+
+                    <div class="result-value">
+                        {{ prediction }}
+                    </div>
+
+                    <p>
+                        Raw output from your trained machine learning model.
+                    </p>
+                </div>
+
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="error" id="predictionError">
+                {{ error }}
+            </div>
+            {% endif %}
+
+        </section>
+
+        <section class="steps">
+
+            <div class="step">
+                <span class="step-number">01</span>
+                <div>
+                    <h3>Enter Data</h3>
+                    <p>Provide the wine measurements.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">02</span>
+                <div>
+                    <h3>Run Prediction</h3>
+                    <p>Let the trained model process the data.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">03</span>
+                <div>
+                    <h3>View Results</h3>
+                    <p>See your prediction instantly.</p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        WineLab · Machine Learning Prediction System
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        const form = document.getElementById("wineForm");
+        const predictBtn = document.getElementById("predictBtn");
+        const buttonText = document.getElementById("buttonText");
+        const buttonArrow = document.getElementById("buttonArrow");
+
+        // Validate form and show loading message
+        form.addEventListener("submit", function (event) {
+            const inputs = form.querySelectorAll('input[type="number"]');
+
+            for (const input of inputs) {
+                if (input.value.trim() === "" || !input.checkValidity()) {
+                    event.preventDefault();
+                    input.focus();
+                    input.reportValidity();
+                    return;
+                }
+            }
+
+            predictBtn.disabled = true;
+            buttonText.textContent = "Predicting...";
+            buttonArrow.textContent = "⏳";
+        });
+
+        // Scroll to prediction or error after the page reloads
+        document.addEventListener("DOMContentLoaded", function () {
+            const result = document.getElementById("predictionResult");
+            const error = document.getElementById("predictionError");
+
+            if (result || error) {
+                (result || error).scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
